@@ -6,11 +6,13 @@ import (
 	"os"
 )
 
-// ExecveEvent 对应eBPF map中的值结构
-type ExecveEvent struct {
-	Comm  [16]byte // 进程名称，通常是16字节的固定长度数组
-	Pid   uint32   // 进程ID
-	Count uint32   // 计数
+const TaskCommLen = 16
+
+// ExecEvent represents process information with name, ID and execution count
+type ExecEvent struct {
+	Comm  [TaskCommLen]byte // 进程名
+	Pid   uint32            // 进程ID
+	Count uint64            // 执行次数计数
 }
 
 // DumpEbpfMap 从指定路径读取pinned eBPF map并打印其内容
@@ -38,7 +40,7 @@ func DumpEbpfMap(mapPath string) error {
 	// 遍历map中的所有键值对
 	var (
 		key   uint32
-		value ExecveEvent
+		value ExecEvent
 		iter  = m.Iterate()
 	)
 
